@@ -14,6 +14,10 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import axios from 'axios'
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function StoreModal() {
   //ini zod untuk validas minimal string 1 dari library
@@ -31,9 +35,21 @@ export default function StoreModal() {
   });
 
     //On Submit menangani data dikirim
+    const [loading,setLoading]=useState(false)
+    const router=useRouter()
   const onSubmit = async (value: z.infer<typeof formScema>) => {
     // TODO buat toko
-    console.log(value);
+    try {
+      setLoading(true)
+      const respone = await axios.post('/api/stores',value)
+      router.push(`/${respone.data.id}`)
+      console.log(respone.data);
+      toast.success('berhasil bikin toko')
+    } catch (error) {
+      toast.error('gagal bikin toko')
+    }finally{
+      setLoading(false)
+    }
   };
   return (
     <Modal //menampilkan modal dari komponen modal
@@ -53,15 +69,15 @@ export default function StoreModal() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="nama toko" {...field} />
+                      <Input disabled={loading} placeholder="nama toko" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="pt-6 space-x-2 flex items-center justify-end w-full">
-                <Button variant={"outline"} onClick={storeModal.onClose}>Batal</Button>
-                <Button type="submit">lanjut</Button>
+                <Button disabled={loading} variant={"outline"} onClick={storeModal.onClose}>Batal</Button>
+                <Button disabled={loading} type="submit">lanjut</Button>
               </div>
             </form>
           </Form>
