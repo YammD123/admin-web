@@ -1,4 +1,3 @@
-"use client";
 import * as z from "zod";
 import { useStoreModal } from "@/app/hooks/use-store-modal";
 import Modal from "../modal";
@@ -16,7 +15,6 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import axios from 'axios'
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function StoreModal() {
@@ -36,14 +34,13 @@ export default function StoreModal() {
 
     //On Submit menangani data dikirim
     const [loading,setLoading]=useState(false)
-    const router=useRouter()
   const onSubmit = async (value: z.infer<typeof formScema>) => {
     // TODO buat toko
     try {
       setLoading(true)
       const respone = await axios.post('/api/stores',value)
-      router.push(`/${respone.data.id}`)
       console.log(respone.data);
+      window.location.assign(`/${respone.data.id}`)
       toast.success('berhasil bikin toko')
     } catch (error) {
       toast.error('gagal bikin toko')
