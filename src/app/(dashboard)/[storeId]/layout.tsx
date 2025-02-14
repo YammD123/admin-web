@@ -1,3 +1,4 @@
+import Navbar from "@/components/navbar";
 import db from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -26,7 +27,7 @@ export default async function DashboardLayout({
     }
     return (
         <>
-        navbaer
+        <Navbar/>
         {children}
         </>
     )
