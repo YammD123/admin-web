@@ -6,9 +6,17 @@ import { Store } from "@prisma/client";
 import { useStoreModal } from "@/app/hooks/use-store-modal";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { ChevronDown, Store as StoreIcon } from "lucide-react";
+import { Check, ChevronDown, PlusIcon, Store as StoreIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "./ui/command";
 type PopOverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
@@ -53,17 +61,44 @@ export default function StoreSwicher({
       </PopoverTrigger>
       <PopoverContent>
         <Command>
-            <CommandList>
-                <CommandInput placeholder="cari tooko"/>
-                <CommandEmpty>Toko todak ada</CommandEmpty>
-                <CommandGroup heading="Toko">
-                    {formattedItems.map((store)=>(
-                        <CommandItem key={store.value}>
-                            
-                        </CommandItem>
-                    ))}
-                </CommandGroup>
-            </CommandList>
+          <CommandList>
+            <CommandInput placeholder="cari tooko" />
+            <CommandEmpty>Toko todak ada</CommandEmpty>
+            <CommandGroup heading="Toko">
+              {formattedItems.map((store) => (
+                <CommandItem
+                  key={store.value}
+                  onSelect={() => onStoreSelect(store)}
+                  className="text-sm"
+                >
+                  <StoreIcon className="mr-2 h-4 w-4" />
+                  {store.label}
+                  <Check
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      currentStore?.value === store.value
+                        ? "opacity-100"
+                        : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+          <CommandSeparator />
+          <CommandList>
+            <CommandGroup>
+              <CommandItem
+                onSelect={() => {
+                  setOpen(false);
+                  storeModal.onOpen();
+                }}
+              >
+                <PlusIcon className="mr-2 h-4 w-4"/>
+                buat toko
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
