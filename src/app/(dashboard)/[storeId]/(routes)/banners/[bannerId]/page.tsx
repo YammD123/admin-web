@@ -1,5 +1,6 @@
 import db from '@/lib/db'
 import React from 'react'
+import BannerForm from './components/banner-form'
 
 export default async function BannerPage({
     params
@@ -12,8 +13,10 @@ export default async function BannerPage({
         }
     })
   return (
-    <div className=''>
-        
+    <div className='flex-col'>
+        <div className='flex-1 space-y-4 p-8 pt-6'>
+            <BannerForm initialData={banner}/>
+        </div>
     </div>
   )
 }
