@@ -12,9 +12,19 @@ export default function MainNav({
   const params = useParams();
   const routes = [
     {
+      href: `/${params.storeId}`,
+      label: "Dashboard",
+      active: pathname === `/${params.storeId}`,
+    },
+    {
       href: `/${params.storeId}/settings`,
       label: "settings",
       active: pathname === `/${params.storeId}/settings`,
+    },
+    {
+      href: `/${params.storeId}/banners`,
+      label: "banners",
+      active: pathname === `/${params.storeId}/banner`,
     },
   ];
   return (

@@ -1,4 +1,6 @@
 "use client";
+import { useorigin } from "@/app/hooks/use-origin";
+import { ApiAlert } from "@/components/api-alert";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +42,7 @@ export default function SettingsForm({ initialData }: settingsFormProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const origin = useorigin();
 
   const onSubmit = async (data: SettingsFormValues) => {
     try {
@@ -53,12 +56,27 @@ export default function SettingsForm({ initialData }: settingsFormProps) {
       setLoading(false)
     }
   };
+
+  const onDelete = async ()=>{
+    try {
+      setLoading(true)
+      await axios.delete(`/api/stores/${params.storeId}`)
+      router.push('/')
+      toast.success("berhasil menghapus data")
+      router.refresh()
+    } catch (error) {
+      toast.error("gagal menghapus data")
+    }finally{
+      setLoading(false)
+      setOpen(false)
+    }
+  }
   return (
     <>
     <AlertModal 
      isOpen={open}
      onClose={() => setOpen(false)}
-     onConfirm={() => {}}
+     onConfirm={onDelete}
      loading={loading}/>
       <div className="flex items-center justify-between">
         <Heading title="Settings" description="Manage store preferences" />
@@ -103,6 +121,8 @@ export default function SettingsForm({ initialData }: settingsFormProps) {
           </Button>
         </form>
       </Form>
+      <Separator/>
+      <ApiAlert title="PUBLIC_API_URL" description={`${origin}/api/${params.storeId}`} variant="public"/>
     </>
   );
 }

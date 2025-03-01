@@ -17,6 +17,19 @@ model Store {
   id      String    @id @default(uuid())
   name    String
   userId  String
+  banners  Banner[] @relation("Store to banner")
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
+}
+
+model Banner {
+  id    String    @id @default(uuid())
+  storeId String
+  store Store @relation("Store to banner",fields: [storeId], references: [id])
+  label String
+  imageURL String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  @@index([storeId])
 }

@@ -48,6 +48,7 @@ export default function StoreModal() {
       setLoading(false)
     }
   };
+  
   return (
     <Modal //menampilkan modal dari komponen modal
       title="Create Store"
