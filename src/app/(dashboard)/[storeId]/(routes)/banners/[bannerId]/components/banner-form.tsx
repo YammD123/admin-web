@@ -63,6 +63,7 @@ export default function BannerForm({ initialData }: BannerFormProps) {
         await axios.post(`/api/${params.storeId}/banners`,data);
       }
       router.refresh();
+      router.push(`/${params.storeId}/banners`);
       toast.success("Data berhasil diupdate");
     } catch (error) {
       toast.error("cek kembali data yang diinput");
