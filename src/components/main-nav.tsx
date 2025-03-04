@@ -26,6 +26,11 @@ export default function MainNav({
       label: "banners",
       active: pathname === `/${params.storeId}/banners`,
     },
+    {
+      href: `/${params.storeId}/categories`,
+      label: "categories",
+      active: pathname === `/${params.storeId}/categories`,
+    },
   ];
   return (
     <nav className={cn(`flex items-center space-x-4 lg:space-x-6`, className)}>
