@@ -21,6 +21,7 @@ export default async function DashboardLayout({
             id:params.storeId,
             userId:userId
         }
+        
     })
     if(!store){
         redirect('/')
