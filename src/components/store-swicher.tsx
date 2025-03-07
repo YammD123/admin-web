@@ -35,6 +35,7 @@ export default function StoreSwicher({
     value: item.id,
   }));
 
+  
   const currentStore = formattedItems.find(
     (item) => item.value === params.storeId
   );
