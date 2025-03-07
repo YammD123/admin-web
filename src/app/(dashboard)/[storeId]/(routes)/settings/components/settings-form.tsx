@@ -1,128 +1,108 @@
-"use client";
-import { useorigin } from "@/app/hooks/use-origin";
-import { ApiAlert } from "@/components/api-alert";
-import { AlertModal } from "@/components/modals/alert-modal";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Heading } from "@/components/ui/heading";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Store } from "@prisma/client";
-import axios from "axios";
-import { Trash } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { set, z } from "zod";
-interface settingsFormProps {
-  initialData: Store;
+"use client"
+
+import { Trash } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { useState } from 'react'
+import { AlertModal } from '@/components/modals/alert-modal'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import toast from 'react-hot-toast'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
+import { useParams, useRouter } from 'next/navigation'
+import { ApiAlert } from '@/components/api-alert'
+import { useorigin } from '@/app/hooks/use-origin'
+
+interface SettingsFormProps {
+  initialData: {
+    name: string
+  }
 }
 
 const formSchema = z.object({
-  name: z.string().min(1),
-});
+  name: z.string().min(1, { message: 'Nama toko tidak boleh kosong' })
+})
 
-type SettingsFormValues = z.infer<typeof formSchema>;
+type SettingsFormValues = z.infer<typeof formSchema>
 
-export default function SettingsForm({ initialData }: settingsFormProps) {
+export default function SettingsForm({ initialData }: SettingsFormProps) {
+  const { storeId } = useParams()
+  const router = useRouter()
+  const origin = useorigin()
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
-  });
-  const params = useParams();
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const origin = useorigin();
+    defaultValues: initialData
+  })
 
   const onSubmit = async (data: SettingsFormValues) => {
     try {
-      setLoading(true);
-      await axios.patch(`/api/stores/${params.storeId}`,data);
-      router.refresh();
-      toast.success("Data berhasil diupdate");
+      setLoading(true)
+      await axios.patch(`/api/stores/${storeId}`, data)
+      router.refresh()
+      toast.success('Data berhasil diupdate')
     } catch (error) {
-      toast.error("cek kembali data yang diinput");
-    }finally{
+      toast.error('Gagal update data')
+    } finally {
       setLoading(false)
     }
-  };
+  }
 
-  const onDelete = async ()=>{
+  const onDelete = async () => {
     try {
       setLoading(true)
-      await axios.delete(`/api/stores/${params.storeId}`)
+      await axios.delete(`/api/stores/${storeId}`)
+      toast.success('Data berhasil dihapus')
       router.push('/')
-      toast.success("berhasil menghapus data")
       router.refresh()
     } catch (error) {
-      toast.error("gagal menghapus data")
-    }finally{
+      toast.error('Gagal hapus data')
+    } finally {
       setLoading(false)
       setOpen(false)
     }
   }
+
   return (
     <>
-    <AlertModal 
-     isOpen={open}
-     onClose={() => setOpen(false)}
-     onConfirm={onDelete}
-     loading={loading}/>
-      <div className="flex items-center justify-between">
-        <Heading title="Settings" description="Manage store preferences" />
-        <Button
-          disabled={loading}
-          variant={"destructive"}
-          size="sm"
-          onClick={() => setOpen(true)}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
-      </div>
-      <Separator />
-      <Form {...form}>
-        <form
-          className="space-y-8 w-full"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="grid grid-cols-3 gap-8">
+      <AlertModal isOpen={open} onClose={() => setOpen(false)} onConfirm={onDelete} loading={loading} />
+      <div className='space-y-6'>
+        <div className='flex justify-between items-center'>
+          <CardTitle className='text-lg'>Store Settings</CardTitle>
+          <Button variant='destructive' size='sm' disabled={loading} onClick={() => setOpen(true)}>
+            <Trash className='w-4 h-4' />
+          </Button>
+        </div>
+        <Separator />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             <FormField
               control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={loading}
-                        placeholder="nama toko"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Nama Toko' {...field} disabled={loading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button type="submit" disabled={loading}>
-            save
-          </Button>
-        </form>
-      </Form>
-      <Separator/>
-      <ApiAlert title="PUBLIC_API_URL" description={`${origin}/api/${params.storeId}`} variant="public"/>
+            <Button type='submit' disabled={loading} className='w-full'>
+              {loading ? 'Loading...' : 'Save'}
+            </Button>
+          </form>
+        </Form>
+        <Separator />
+        <ApiAlert title='PUBLIC_API_URL' description={`${origin}/api/${storeId}`} variant='public' />
+      </div>
     </>
-  );
+  )
 }
